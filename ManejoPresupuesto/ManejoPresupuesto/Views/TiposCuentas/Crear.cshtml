@@ -1,0 +1,72 @@
+﻿@model TipoCuenta
+
+@{
+    ViewData["Title"] = "Crear Tipo Cuenta";
+}
+
+<h1>Crear Tipo de Cuenta</h1>
+<h5>El tipo de cuenta se refiere a como podemos agrupar cuentas. 
+    Ejemplos: Préstamos, tarjetas de crédito, etc. 
+</h5>
+
+@*  Mostrar comentario de errores *@
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+<form asp-action="Crear">
+    <div class="mb-3">
+        <label asp-for="Nombre" class="form-label"></label>
+        <input type="text" asp-for="Nombre" class="form-control" />
+        @*Validaciones en el front-end *@
+        <span asp-validation-for="Nombre" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Enviar</button>
+    <a class="btn btn-secondary" asp-action="Index">Cancelar</a>
+
+
+
+    @*  Campos para ejemplos validaciones de datos (TipoCuenta.cs) *@
+
+    @*
+        <div class="mb-3">
+        <label asp-for="Email" class="form-label"></label>
+        <input type="text" asp-for="Email" class="form-control" />
+        @* Validaciones en el front-end *@
+        @*
+            <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+   *@
+
+   @*
+        <div class="mb-3">
+        <label asp-for="URL" class="form-label"></label>
+        <input type="text" asp-for="URL" class="form-control" />
+        @*Validaciones en el front-end *@
+        @*
+            <span asp-validation-for="URL" class="text-danger"></span>
+            </div>
+    *@
+
+   @*
+        <div class="mb-3">
+        <label asp-for="TarjetaDeCredito" class="form-label"></label>
+        <input type="text" asp-for="TarjetaDeCredito" class="form-control" />
+        @*Validaciones en el front-end *@
+        @*
+            <span asp-validation-for="TarjetaDeCredito" class="text-danger"></span>
+            </div>
+   *@       
+    
+</form>
+@* Para las validaciones en el front-end debbemos agregar la librería llamada JQUERY-VALIDATE que se encuentra en una vista parcial llamada 
+_ValidationScriptsPartial en la carpeta shared del proyecto/Solucion *@
+@*En ASP.NET CORE se puede insertar código en el Layout desde la vista utilizando secciones. Básicamente hay secciones de cídiugo que yo quiero
+colocar en un lugar específico del Layout y para eso se definen las secciones - (Revisar parte inferior de la vista _Layout.cshtml 
+  @await RenderSectionAsync("Scripts", required: false)))*@
+@* Acá lo que se está haciendo es invocar la sección de scripts y se coloca lo que se quiera que se ponga en el archivo _Layout.cshtml, 
+    respetando los scripts anteriores definidos allí (@await RenderSectionAsync("Scripts", required: false))*@
+
+
+
+@section scripts{
+     <partial name="_ValidationScriptsPartial" />
+ }
