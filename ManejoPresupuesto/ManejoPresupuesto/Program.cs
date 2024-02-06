@@ -7,6 +7,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddTransient<IRepositorioTiposCuentas, RepositorioTiposCuentas>();
 //Configurando el servicio de Usuarios
 builder.Services.AddTransient<IServicioUsuarios, ServicioUsuarios>(); //Ahora ir hacia Tipos Cuentas Controller a usar el servicio
+builder.Services.AddTransient<IRepositorioCuentas, RepositorioCuentas>();//Ahora configurar el servicio en el controlador de Cuentas
 
 var app = builder.Build();
 

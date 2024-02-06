@@ -39,9 +39,10 @@ namespace ManejoPresupuesto.Servicios
             using var connection = new SqlConnection(connectionString);
             /* CTRL + . QuerySingle para importar Dapper - QuerySingle permite hacer un queey que me va a devolver un solo 
                resultado, esto porque después que inserte el tipo cuenta quiero extraer el id de ese tipo cuenta */
-            var id = await connection.QuerySingleAsync<int>($@"INSERT INTO TiposCuentas (Nombre, UsuarioId, Orden)
-                                                 values (@Nombre, @UsuarioId, 0);
-                                                 SELECT SCOPE_IDENTITY();", tipoCuenta);
+            var id = await connection.QuerySingleAsync<int>("TiposCuentas_Insertar", 
+                                                            new {UsuarioId = tipoCuenta.UsuarioId,
+                                                            nombre = tipoCuenta.Nombre},
+                                                            commandType: System.Data.CommandType.StoredProcedure);
             // SELECT SCOPE_IDENTITY() es el que me trae el Id del registro recien creado
 
             tipoCuenta.Id = id;

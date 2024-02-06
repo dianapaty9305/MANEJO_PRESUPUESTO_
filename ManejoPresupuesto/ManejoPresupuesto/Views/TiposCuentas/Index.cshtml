@@ -54,7 +54,7 @@
 
             function obtenerIdsDeElementos(){
                 //map(function()) me permite iterar cada uno de los ids y obtener su valor
-                const $ids = $(".ids").map(function () {
+                const ids = $(".ids").map(function () {
                     //obteniendo el valor de cada uno de los tipo cuenta, colocando ese valor en un arreglo
                     return $(this).val();
                 //.get() para convertirlo en un arreglo
@@ -67,7 +67,7 @@
                 //Necesito convertir en formato JSON
             var data = JSON.stringify(ids);
 
-                await fecth(urlOrdenar, {
+                await fetch(urlOrdenar, {
                     //Configurando nuestra petición Http
                     method: 'POST',
                     body: data,
