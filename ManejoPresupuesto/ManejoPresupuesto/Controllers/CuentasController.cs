@@ -14,7 +14,7 @@ namespace ManejoPresupuesto.Controllers
         private readonly IRepositorioCuentas repositorioCuentas;
 
         // CTRL + . en repositorioTiposCuenta para agregar como campo
-        // CTRL + . en servicioUsuarios para agregar como campo
+        // CTRL + . en servicioUsuarios para agregar como campo  
         // CTRL + . en repositorioCuentas para agregar como campo
         public CuentasController(IRepositorioTiposCuentas repositorioTiposCuentas,
             IServicioUsuarios servicioUsuarios, IRepositorioCuentas repositorioCuentas)
@@ -22,6 +22,26 @@ namespace ManejoPresupuesto.Controllers
             this.repositorioTiposCuentas = repositorioTiposCuentas;
             this.servicioUsuarios = servicioUsuarios;
             this.repositorioCuentas = repositorioCuentas;
+        }
+
+        //Acción Index
+        public async Task<IActionResult> Index()
+        {
+            var usuarioId = servicioUsuarios.ObtenerUsuarioId();
+            var cuentasConTipoCuenta = await repositorioCuentas.Buscar(usuarioId);
+            /*Construyendo el modelo, usando una tipica operaciónde GroupBy en la cual agrupamos por TipoCuenta y con el Select se hace una proyeccion
+             * hacia IndiceCuentasViewModel donde se coloca el tipo cuenta. El key es el TipoCuenta osea representa el valor que utilizamos para
+             reaaizar el GroupBy - luego cuentas se iguala a Enumerable, con esto se dice que asi como yo tengo una agrupación de cuentas por 
+            tipo cuenta cuando se dice grupo.AsEnumerable() estoy obteniendo el IEnumerable de las cuentas pertenecienntes  al TipoCuenta que 
+            se tiene */
+            var modelo = cuentasConTipoCuenta
+                .GroupBy(x => x.TipoCuenta)
+                .Select(grupo => new IndiceCuentasViewModel
+                {
+                    TipoCuenta = grupo.Key,
+                    Cuentas = grupo.AsEnumerable()
+                }).ToList();
+            return View(modelo);    
         }
 
         [HttpGet]
@@ -53,6 +73,56 @@ namespace ManejoPresupuesto.Controllers
                 return View(cuenta);
             }
             await repositorioCuentas.Crear(cuenta);
+            return RedirectToAction("Index");
+        }
+        
+
+        //Acción para realizar la Edición de la cuenta 
+        public async Task<IActionResult> Editar(int id)
+        {
+            var usuarioId = servicioUsuarios.ObtenerUsuarioId();
+            var cuenta = await repositorioCuentas.ObtenerPorId(id, usuarioId);
+
+            if (cuenta is null)
+            {
+                RedirectToAction("NoEncontrado", "Home");
+            }
+
+            /*Armando el modelo el cual va a esperar la vista que es el CuentaCreacionViewModel - con esto hacemos el mapeo de cuenta 
+              a CuentaCreacionViewModel */
+            /* necesitamos el CuentaCreacionViewModel porque tendremos que mostrarle al usuario el listado de todos los tipos cuenta que tiene*/
+            var modelo = new CuentaCreacionViewModel()
+            {
+                Id = cuenta.Id,
+                Nombre = cuenta.Nombre,
+                TipoCuentaId = cuenta.TipoCuentaId,
+                Descripcion = cuenta.Descripcion,
+                Balance = cuenta.Balance
+            };
+            modelo.TiposCuentas = await ObtenerTiposCuentas(usuarioId);
+            return View(modelo);
+        }
+
+        //Acción que va a recibir el posteo del formulario
+        [HttpPost]
+        public async Task<IActionResult> Editar(CuentaCreacionViewModel cuentaEditar)
+        {
+            var usuarioId = servicioUsuarios.ObtenerUsuarioId();
+            var cuenta = await repositorioCuentas.ObtenerPorId(cuentaEditar.Id, usuarioId);
+            if (cuenta is null) 
+            { 
+                return RedirectToAction("NoEncontrado", "Home");
+            }
+            //Validando el tipo cuenta
+            var tipoCuenta = await repositorioCuentas.ObtenerPorId(cuentaEditar.TipoCuentaId, usuarioId);
+
+            if(tipoCuenta is null)
+            {
+                return RedirectToAction("NoEncontrado", "Home");
+            }
+
+            //Actualizar la cuenta - utiliza el método en repositorio cuentas - public async Task Actualizar(CuentaCreacionViewModel cuenta)
+            await repositorioCuentas.Actualizar(cuentaEditar);
             return RedirectToAction("Index");
         }
 
