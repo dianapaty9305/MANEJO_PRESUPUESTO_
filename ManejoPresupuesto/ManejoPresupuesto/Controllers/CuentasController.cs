@@ -1,4 +1,5 @@
-﻿using ManejoPresupuesto.Models;
+﻿using AutoMapper;
+using ManejoPresupuesto.Models;
 using ManejoPresupuesto.Servicios;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -12,16 +13,20 @@ namespace ManejoPresupuesto.Controllers
         private readonly IRepositorioTiposCuentas repositorioTiposCuentas;
         private readonly IServicioUsuarios servicioUsuarios;
         private readonly IRepositorioCuentas repositorioCuentas;
+        private readonly IMapper mapper;
 
         // CTRL + . en repositorioTiposCuenta para agregar como campo
         // CTRL + . en servicioUsuarios para agregar como campo  
         // CTRL + . en repositorioCuentas para agregar como campo
+        // CTRL + . en mapper para inicializar como un campo
         public CuentasController(IRepositorioTiposCuentas repositorioTiposCuentas,
-            IServicioUsuarios servicioUsuarios, IRepositorioCuentas repositorioCuentas)
+            IServicioUsuarios servicioUsuarios, IRepositorioCuentas repositorioCuentas,
+            IMapper mapper)
         {
             this.repositorioTiposCuentas = repositorioTiposCuentas;
             this.servicioUsuarios = servicioUsuarios;
             this.repositorioCuentas = repositorioCuentas;
+            this.mapper = mapper;
         }
 
         //Acción Index
@@ -85,20 +90,23 @@ namespace ManejoPresupuesto.Controllers
 
             if (cuenta is null)
             {
-                RedirectToAction("NoEncontrado", "Home");
+               return RedirectToAction("NoEncontrado", "Home");
             }
 
             /*Armando el modelo el cual va a esperar la vista que es el CuentaCreacionViewModel - con esto hacemos el mapeo de cuenta 
               a CuentaCreacionViewModel */
             /* necesitamos el CuentaCreacionViewModel porque tendremos que mostrarle al usuario el listado de todos los tipos cuenta que tiene*/
-            var modelo = new CuentaCreacionViewModel()
-            {
-                Id = cuenta.Id,
-                Nombre = cuenta.Nombre,
-                TipoCuentaId = cuenta.TipoCuentaId,
-                Descripcion = cuenta.Descripcion,
-                Balance = cuenta.Balance
-            };
+            //Estoy mapeando hacia  CuentaCreacionViewModel y le voy a pasar la cuenta
+            var modelo = mapper.Map<CuentaCreacionViewModel>(cuenta);
+            //Mapeo Manual
+            /* new CuentaCreacionViewModel()
+        {
+            Id = cuenta.Id,
+            Nombre = cuenta.Nombre,
+            TipoCuentaId = cuenta.TipoCuentaId,
+            Descripcion = cuenta.Descripcion,
+            Balance = cuenta.Balance
+        };*/
             modelo.TiposCuentas = await ObtenerTiposCuentas(usuarioId);
             return View(modelo);
         }
@@ -114,7 +122,7 @@ namespace ManejoPresupuesto.Controllers
                 return RedirectToAction("NoEncontrado", "Home");
             }
             //Validando el tipo cuenta
-            var tipoCuenta = await repositorioCuentas.ObtenerPorId(cuentaEditar.TipoCuentaId, usuarioId);
+            var tipoCuenta = await repositorioTiposCuentas.ObtenerPorId(cuentaEditar.TipoCuentaId, usuarioId);
 
             if(tipoCuenta is null)
             {
@@ -123,6 +131,36 @@ namespace ManejoPresupuesto.Controllers
 
             //Actualizar la cuenta - utiliza el método en repositorio cuentas - public async Task Actualizar(CuentaCreacionViewModel cuenta)
             await repositorioCuentas.Actualizar(cuentaEditar);
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]        
+        public async Task<IActionResult> Borrar(int id)
+        {
+            //Se necesita validar que el usuario que está haciendo la peticion sea el que creó la cuenta
+            var usuarioId = servicioUsuarios.ObtenerUsuarioId();
+            var cuenta = await repositorioCuentas.ObtenerPorId(id, usuarioId);
+
+            if(cuenta is null)
+            {
+                return RedirectToAction("NoEncontrado, Home");
+            }
+            
+            return View(cuenta);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> BorrarCuenta(int id)
+        {
+            //Se necesita validar que el usuario que está haciendo la peticion sea el que creó la cuenta
+            var usuarioId = servicioUsuarios.ObtenerUsuarioId();
+            var cuenta = await repositorioCuentas.ObtenerPorId(id, usuarioId);
+
+            if (cuenta is null)
+            {
+                return RedirectToAction("NoEncontrado, Home");
+            }
+            await repositorioCuentas.Borrar(id);
             return RedirectToAction("Index");
         }
 
