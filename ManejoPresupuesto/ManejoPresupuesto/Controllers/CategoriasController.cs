@@ -15,8 +15,8 @@ namespace ManejoPresupuesto.Controllers
         //CTRL + . en repositorioCategorias y asignar como un campo
         //Importar el IServicioUsuarios 
         //CTRL + . en servicioUsuarios y asignar como un campo
-        public CategoriasController(IRepositorioCategorias repositorioCategorias, 
-            IServicioUsuarios servicioUsuarios) 
+        public CategoriasController(IRepositorioCategorias repositorioCategorias,
+            IServicioUsuarios servicioUsuarios)
         {
             this.repositorioCategorias = repositorioCategorias;
             this.servicioUsuarios = servicioUsuarios;
@@ -25,7 +25,7 @@ namespace ManejoPresupuesto.Controllers
         [HttpGet]
         public IActionResult Crear()
         {
-            return View();  
+            return View();
         }
 
         [HttpPost]
