@@ -4,17 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ManejoPresupuesto.Controllers
 {
-    //CTRL + . en Controller para importar
     public class CategoriasController : Controller
     {
         private readonly IRepositorioCategorias repositorioCategorias;
         private readonly IServicioUsuarios servicioUsuarios;
 
-        //Constructor
-        //Importar el IRepositorioCategorias
-        //CTRL + . en repositorioCategorias y asignar como un campo
-        //Importar el IServicioUsuarios 
-        //CTRL + . en servicioUsuarios y asignar como un campo
         public CategoriasController(IRepositorioCategorias repositorioCategorias,
             IServicioUsuarios servicioUsuarios)
         {

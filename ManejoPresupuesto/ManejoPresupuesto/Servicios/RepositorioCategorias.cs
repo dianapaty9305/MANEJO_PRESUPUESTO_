@@ -4,28 +4,24 @@ using Microsoft.Data.SqlClient;
 
 namespace ManejoPresupuesto.Servicios
 {
-
     public interface IRepositorioCategorias
     {
         Task Crear(Categoria categoria);
     }
 
-    //Implementamos la Interface
     public class RepositorioCategorias : IRepositorioCategorias
     {
         private readonly string connectionString;
-
         public RepositorioCategorias(IConfiguration configuration)
         {
             connectionString = configuration.GetConnectionString("DefaultConnection");
         }
 
-        //Método para crear una categoría
-        // CTRL + . en Categoria para importar el modelo
-        // CTRL + . en Crear pull a la Interface
+        /*CTRL + . en Crear para hace Pull IRepositorioCategorias*/
         public async Task Crear(Categoria categoria)
         {
             using var connection = new SqlConnection(connectionString);
+            /*CTRL + . en QuerySingleAsync para importar Dapper*/
             var id = await connection.QuerySingleAsync<int>(@"
                                         INSERT INTO Categorias (Nombre, TipoOperacionId, UsuarioId)
                                         Values (@Nombre, @TipoOperacionId, @UsuarioId);

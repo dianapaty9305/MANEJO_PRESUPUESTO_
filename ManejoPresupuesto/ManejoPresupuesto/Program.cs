@@ -8,7 +8,7 @@ builder.Services.AddTransient<IRepositorioTiposCuentas, RepositorioTiposCuentas>
 //Configurando el servicio de Usuarios
 builder.Services.AddTransient<IServicioUsuarios, ServicioUsuarios>(); //Ahora ir hacia Tipos Cuentas Controller a usar el servicio
 builder.Services.AddTransient<IRepositorioCuentas, RepositorioCuentas>();//Ahora configurar el servicio en el controlador de Cuentas
-builder.Services.AddTransient<IRepositorioCategorias, RepositorioCategorias>(); //Configurando el IRepositorioCategorias
+builder.Services.AddTransient<IRepositorioCategorias, RepositorioCategorias>();//Ahora configurar el servicio en el controlador de Categorías
 builder.Services.AddAutoMapper(typeof(Program)); //Configurando AutoMapper
 
 
